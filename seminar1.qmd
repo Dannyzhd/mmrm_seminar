@@ -1,0 +1,322 @@
+---
+title: "Longitudinal Study in R"
+author: "Daniel Zhang"
+format: revealjs
+editor: visual
+toc: TRUE
+toc-title: "Flow"
+slidelevel: 2
+---
+
+# Longitudinal Studies
+
+Studies in which individuals are measured repeatedly through time.
+
+-   measurements of the same individuals are taken repeatedly through time.
+
+-   allow direct study of change over time.
+
+## normal tidy data
+
+![](images/tidy_data.png)
+
+## Longitudinal Data
+
+::: notes
+draw a picture here.
+:::
+
+### example1:
+
+### example2:
+
+## Objective:
+
+Characterize the change in response over time and the factors that influence change.
+
+capture **within-individual change**.
+
+remove variability among individuals.
+
+## Properties of Longitudinal Data:
+
+### Correlation
+
+repeated measures on the same individual are usually positively correlated
+
+### Variability
+
+variability is often heterogeneous across measurement occasions.
+
+# Mixed model of repeated measure
+
+## Notations
+
+One way to symbolize longitudinal data is by adding an index for time(compared to its non-longitudinal counterpart)
+
+-   Let $Y_{ij}$ denote the sequence of measurements for the $i$th individual $i= 1,...$ N, at the $j$th occasion $j = 1, ...$ , n.
+
+-   each observation $Y_{ij}$ has an associated set of covariates, $X\_{ij1}$ ,$X\_{ij1}$, ... , $X\_{ijp}$, where i = 1, corresponding to the intercept.
+
+## more Notations
+
+![](images/mmrm_math2.png){width="670"}
+
+## 
+
+### the linear model
+
+![](images/mmrm_math1.png)
+
+## multivariate normal distribution
+
+$f({y}, {\mu}, \Sigma) = \frac{1}{(2\pi)^{\frac{p}{2}} |\Sigma|^{\frac{1}{2}}} \exp\left(-\frac{1}{2} ({y} - {\mu})' \Sigma^{-1} ({y} - {\mu})\right)$
+
+## Variance Covariance Matrix
+
+![](images/variance_covariance_matrix.jpeg){width="686"}
+
+## common variance-covariance matrix forms
+
+-   [Unstructured (`us`)](https://cran.r-project.org/web/packages/mmrm/vignettes/covariance.html#unstructured-us)
+
+-   [Homogeneous (`ad`) and Heterogeneous Ante-dependence (`adh`)](https://cran.r-project.org/web/packages/mmrm/vignettes/covariance.html#homogeneous-ad-and-heterogeneous-ante-dependence-adh)
+
+-   [Homogeneous (`toep`) and Heterogeneous Toeplitz (`toeph`)](https://cran.r-project.org/web/packages/mmrm/vignettes/covariance.html#homogeneous-toep-and-heterogeneous-toeplitz-toeph)
+
+-   [Homogeneous (`ar1`) and Heterogeneous (`ar1h`) Autoregressive](https://cran.r-project.org/web/packages/mmrm/vignettes/covariance.html#homogeneous-ar1-and-heterogeneous-ar1h-autoregressive)
+
+-   [Homogeneous (`cs`) and Heterogeneous (`csh`) Compound Symmetry](https://cran.r-project.org/web/packages/mmrm/vignettes/covariance.html#homogeneous-cs-and-heterogeneous-csh-compound-symmetry)
+
+::: notes
+brief introduction for each.
+:::
+
+## Grouped covariance matrix
+
+In some cases, we would like to estimate unique covariance matrices across groups
+
+## ML
+
+![](images/ml.png)
+
+## ml & gls
+
+![](images/ml_gls.png)
+
+## to find ml
+
+![](images/ml_calc.png)
+
+## REML(Restricted Maximum Likelihood Estimator)
+
+### Motivation
+
+MLE $\sum$ is biased in small samples -\> the diagnal elements are underestimated, leading to narrower CI, inflated test statistic and thus increased type1 error.
+
+The main reason is that we are using the estimated $\beta$ to estimate $\sum$
+
+::: notes
+give the example of 2D representation.
+:::
+
+## Degree of freedom calculation
+
+### Satterthwaite
+
+### kenward-roger
+
+### kenward-roger-linear
+
+### Hypothesis testing
+
+### Wald Test
+
+## Robust Sandwich Estimator
+
+# mmrm in SAS
+
+## PROC MIXED
+
+1.  How things are done traditionally
+
+-   TYPE
+
+-   DDFM
+
+-   CL
+
+-   Empirical
+
+-   HTYPE
+
+::: notes
+link back to previous concepts.
+:::
+
+# Shifting to an opensource backbone
+
+-   Well validated open source packages
+
+-   developed by leading companies in the industry
+
+-   coherence among packages by communication and tidy pricniple
+
+-   great synergy and eco system formed by the packages.
+
+::: notes
+put more symbols of packages.
+:::
+
+::: notes
+talk about what I learnt during the sminars of GSK & Roche. How do people break the wall.
+:::
+
+## R Challenges
+
+### discrepencies with SAS
+
+### discrepencies between pacakges
+
+### Synchronization issues between packages
+
+::: notes
+talk about how matching is important given the highly regulated nature of pharma industry. Talk about the advantage and disadvantages of R having various packages.
+:::
+
+## nlme, lme4
+
+-   takes a very long time to converge
+
+-   not enough covariance matrix types
+
+-   degree of freedom calculation
+
+-   Complex Syntax
+
+## Research and communication
+
+### Communication with Lilly's team.
+
+::: notes
+put the summary table i made with Ruqian here.
+:::
+
+### Communication with package developers.
+
+# mmrm package Insights
+
+## Basic syntax demonstration
+
+``` r
+# Define a server for the Shiny app
+function(input, output) {
+  
+  # Fill in the spot we created for a plot
+  output$phonePlot <- renderPlot({
+    # Render a barplot
+  })
+}
+```
+
+## RCPP
+
+R is weak in some kinds of operations. If we need operations listed below, it is time to consider using Rcpp.
+
+-   Loop operations in which later iterations depend on previous iterations.
+
+-   Accessing each element of a vector/matrix.
+
+-   Recurrent function calls within loops.
+
+-   Changing the size of vectors dynamically.
+
+-   Operations that need advanced data structures and algorithms.
+
+## TMB
+
+-   TMB can calculate first and second order derivatives of the likelihood function by [AD](http://en.wikipedia.org/wiki/Automatic_differentiation), or any objective function written in C++.
+
+-   The objective function (and its derivatives) can be called from R. Hence, parameter estimation via e.g. `nlminb()` is easy.
+
+-   The user can specify that the [Laplace approximation](http://en.wikipedia.org/wiki/Laplace_approximation) should be applied to any subset of the function arguments.
+
+    -   Yields marginal likelihood in latent variable model.
+
+-   Standard deviations of any parameter, or derived parameter, obtained by the ['delta method'](http://en.wikipedia.org/wiki/Delta_method).
+
+-   Pre and post-processing of data done in R.
+
+-   TMB is based on state-of-the art software: [CppAD](http://www.coin-or.org/CppAD/), [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page), \...
+
+Template Module Builder
+
+![](images/TMB_components.png)
+
+## Package building workflow
+
+::: notes
+talk about what I learnt during the presentation.
+:::
+
+# Eco System
+
+## broom package
+
+![](images/broom.png)
+
+## emmeans package
+
+![](images/emmeans.png)
+
+# tidymodels framework
+
+![](images/tidymodels.png)
+
+## parsnip package
+
+![](images/parsnip.png){width="334"}
+
+![](images/parsnip1.png)
+
+## Workflows
+
+![](images/workflows.png)
+
+## recipes package
+
+![](images/recipes.png){width="311"}
+
+![](images/recipes2.png)
+
+# teal Framework
+
+![](images/teal.png){width="296"}
+
+## Quick intro to teal
+
+![](images/teal_vs_trad.png)
+
+![](images/teal_struc.png)
+
+![](images/teal_life_cycle.png)
+
+## teal.modules.clinical
+
+<https://github.com/insightsengineering/teal.gallery>
+
+# My ongoing project
+
+## Develop utility function of mmrm
+
+-   utilize the things I learnt above
+
+-   leverage the advanced functional programming I accumulated in the past year during Taffy development.
+
+## Internal R template
+
+-   Explore building our own TFL and shiny generating flow.
+
+-   Utilize rtables, tern, teal.
+
+-   Potentially build internal packages to potentially utilizing Rcpp
